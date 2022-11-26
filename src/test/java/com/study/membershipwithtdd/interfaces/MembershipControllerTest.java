@@ -3,6 +3,8 @@ package com.study.membershipwithtdd.interfaces;
 import static com.study.membershipwithtdd.common.constansts.MembershipConstants.USER_ID_HEADER;
 import static com.study.membershipwithtdd.common.response.MembershipErrorResult.DUPLICATED_MEMBERSHIP_REGISTER;
 import static com.study.membershipwithtdd.domain.membership.Membership.MembershipType.NAVER;
+import static org.assertj.core.api.Assertions.*;
+import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.doThrow;
 import static org.springframework.http.MediaType.APPLICATION_JSON;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
@@ -10,9 +12,12 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import com.google.gson.Gson;
 import com.study.membershipwithtdd.common.exception.MembershipException;
 import com.study.membershipwithtdd.common.response.CommonControllerAdvice;
+import com.study.membershipwithtdd.common.response.CommonResponse;
 import com.study.membershipwithtdd.domain.membership.Membership.MembershipType;
 import com.study.membershipwithtdd.domain.membership.MembershipService;
 import com.study.membershipwithtdd.interfaces.MembershipDto.MembershipRequest;
+import com.study.membershipwithtdd.interfaces.MembershipDto.MembershipResponse;
+import java.nio.charset.StandardCharsets;
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -46,8 +51,8 @@ public class MembershipControllerTest {
 
     @Test
     void mockMvc가_null_아님() {
-        Assertions.assertThat(target).isNotNull();
-        Assertions.assertThat(mockMvc).isNotNull();
+        assertThat(target).isNotNull();
+        assertThat(mockMvc).isNotNull();
     }
 
     @Test
@@ -125,5 +130,35 @@ public class MembershipControllerTest {
 
         // then
         resultActions.andExpect(status().isBadRequest());
+    }
+
+    @Test
+    void 멤버십등록성공() throws Exception {
+        // given
+        final String url = "/api/v1/memberships";
+        final MembershipResponse membershipResponse = MembershipResponse.builder()
+            .id(-1L)
+            .membershipType(NAVER)
+            .build();
+
+        doReturn(membershipResponse).when(membershipService).addMembership("12345", NAVER, 10000);
+
+        // when
+        ResultActions resultActions = mockMvc.perform(
+            MockMvcRequestBuilders.post(url)
+                .header(USER_ID_HEADER, "12345")
+                .content(gson.toJson(membershipRequest(10000, NAVER)))
+                .contentType(APPLICATION_JSON)
+        );
+
+        // then
+        resultActions.andExpect(status().isOk());
+
+        Object response = gson.fromJson(resultActions.andReturn()
+                .getResponse()
+                .getContentAsString(StandardCharsets.UTF_8), CommonResponse.class)
+            .getData();
+
+        assertThat(response).isNotNull();
     }
 }

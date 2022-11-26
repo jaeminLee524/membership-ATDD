@@ -1,9 +1,12 @@
 package com.study.membershipwithtdd.common.response;
 
+import com.study.membershipwithtdd.interfaces.MembershipDto;
+import com.study.membershipwithtdd.interfaces.MembershipDto.MembershipResponse;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import org.springframework.http.ResponseEntity;
 
 @Getter
 @Builder
@@ -29,6 +32,18 @@ public class CommonResponse<T> {
             .message(errorCode.getErrorMsg())
             .errorCode(errorCode.name())
             .build();
+    }
+
+    public static <T> CommonResponse<T> success(T data, String message) {
+        return (CommonResponse<T>) CommonResponse.builder()
+            .result(Result.SUCCESS)
+            .data(data)
+            .message(message)
+            .build();
+    }
+
+    public static <T> CommonResponse<T> success(T data) {
+        return success(data, null);
     }
 
     private enum Result {

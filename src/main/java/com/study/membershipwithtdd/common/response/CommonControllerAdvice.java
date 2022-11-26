@@ -12,6 +12,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.validation.BindingResult;
 import org.springframework.validation.FieldError;
 import org.springframework.web.bind.MethodArgumentNotValidException;
+import org.springframework.web.bind.MissingRequestHeaderException;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.ResponseStatus;
@@ -36,7 +37,7 @@ public class CommonControllerAdvice {
     }
 
     @ResponseStatus(BAD_REQUEST)
-    @ExceptionHandler(value = MethodArgumentNotValidException.class)
+    @ExceptionHandler(value = {MethodArgumentNotValidException.class, MissingRequestHeaderException.class})
     public CommonResponse onMethodArgumentNotValidException(MethodArgumentNotValidException ex) {
         log.error("MethodArgumentNotValidException occur: ", ex.getMessage());
         BindingResult bindingResult = ex.getBindingResult();
