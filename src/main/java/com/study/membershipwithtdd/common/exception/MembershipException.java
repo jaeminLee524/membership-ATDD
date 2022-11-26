@@ -1,8 +1,7 @@
-package com.study.membershipwithtdd.exception;
+package com.study.membershipwithtdd.common.exception;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
-import org.springframework.http.HttpStatus;
 
 @Getter
 @RequiredArgsConstructor
