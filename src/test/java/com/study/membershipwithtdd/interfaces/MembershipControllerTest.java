@@ -9,6 +9,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 import com.google.gson.Gson;
 import com.study.membershipwithtdd.common.exception.MembershipException;
+import com.study.membershipwithtdd.common.response.CommonControllerAdvice;
 import com.study.membershipwithtdd.domain.membership.Membership.MembershipType;
 import com.study.membershipwithtdd.domain.membership.MembershipService;
 import com.study.membershipwithtdd.interfaces.MembershipDto.MembershipRequest;
@@ -38,6 +39,7 @@ public class MembershipControllerTest {
     @BeforeEach
     void setUp() {
         mockMvc = MockMvcBuilders.standaloneSetup(target)
+            .setControllerAdvice(new CommonControllerAdvice())
             .build();
         gson = new Gson();
     }
