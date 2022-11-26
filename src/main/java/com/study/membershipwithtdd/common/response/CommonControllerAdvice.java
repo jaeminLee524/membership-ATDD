@@ -14,4 +14,10 @@ public class CommonControllerAdvice {
         log.error("MembershipException occur: ", ex);
         return CommonResponse.fail(ex.getMessage(), ex.getMembershipErrorResult().name());
     }
+
+    @ExceptionHandler(value = Exception.class)
+    public CommonResponse onException(Exception ex) {
+        log.error("Exception occur: ", ex.getMessage());
+        return CommonResponse.fail(ErrorCode.COMMON_SYSTEM_ERROR);
+    }
 }

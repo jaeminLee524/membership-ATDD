@@ -23,6 +23,14 @@ public class CommonResponse<T> {
             .build();
     }
 
+    public static CommonResponse fail(ErrorCode errorCode) {
+        return CommonResponse.builder()
+            .result(Result.FAIL)
+            .message(errorCode.getErrorMsg())
+            .errorCode(errorCode.name())
+            .build();
+    }
+
     private enum Result {
         SUCCESS,
         FAIL,
