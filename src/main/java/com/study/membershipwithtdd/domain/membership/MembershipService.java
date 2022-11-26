@@ -5,6 +5,7 @@ import static com.study.membershipwithtdd.exception.MembershipErrorResult.DUPLIC
 import com.study.membershipwithtdd.domain.membership.Membership.MembershipType;
 import com.study.membershipwithtdd.exception.MembershipErrorResult;
 import com.study.membershipwithtdd.exception.MembershipException;
+import com.study.membershipwithtdd.interfaces.MembershipDto.MembershipResponse;
 import com.study.membershipwithtdd.repository.MembershipRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -16,12 +17,23 @@ public class MembershipService {
 
     private final MembershipRepository membershipRepository;
 
-    public Membership addMembership(String userId, MembershipType membershipType, Integer point) {
+    public MembershipResponse addMembership(String userId, MembershipType membershipType, Integer point) {
         Membership findMembership = membershipRepository.findByUserIdAndMembershipType(userId, membershipType);
         if (!ObjectUtils.isEmpty(findMembership)) {
             throw new MembershipException(DUPLICATED_MEMBERSHIP_REGISTER);
         }
 
-        return null;
+        Membership membership = Membership.builder()
+            .userId(userId)
+            .membershipType(membershipType)
+            .point(point)
+            .build();
+
+        Membership savedMembership = membershipRepository.save(membership);
+
+        return MembershipResponse.builder()
+            .id(savedMembership.getId())
+            .membershipType(savedMembership.getMembershipType())
+            .build();
     }
 }

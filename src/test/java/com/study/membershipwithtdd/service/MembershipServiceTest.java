@@ -13,6 +13,8 @@ import com.study.membershipwithtdd.domain.membership.Membership.MembershipType;
 import com.study.membershipwithtdd.domain.membership.MembershipService;
 import com.study.membershipwithtdd.exception.MembershipErrorResult;
 import com.study.membershipwithtdd.exception.MembershipException;
+import com.study.membershipwithtdd.interfaces.MembershipDto;
+import com.study.membershipwithtdd.interfaces.MembershipDto.MembershipResponse;
 import com.study.membershipwithtdd.repository.MembershipRepository;
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.Test;
@@ -43,5 +45,34 @@ public class MembershipServiceTest {
 
         // then
         assertThat(result.getMembershipErrorResult()).isEqualTo(MembershipErrorResult.DUPLICATED_MEMBERSHIP_REGISTER);
+    }
+
+
+
+    @Test
+    void 멤버십등록_성공_테스트() {
+        // given
+        doReturn(null).when(membershipRepository).findByUserIdAndMembershipType(userId, membershipType);
+        doReturn(membership()).when(membershipRepository).save(any(Membership.class));
+
+        // when
+        MembershipResponse savedMembership = target.addMembership(userId, membershipType, point);
+
+        // then
+        Assertions.assertThat(savedMembership.getId()).isNotNull();
+        Assertions.assertThat(savedMembership.getMembershipType()).isEqualTo(NAVER);
+
+        // verify
+        verify(membershipRepository, times(1)).findByUserIdAndMembershipType(userId, membershipType);
+        verify(membershipRepository, times(1)).save(any(Membership.class));
+    }
+
+    private Membership membership() {
+        return Membership.builder()
+            .id(-1L)
+            .userId(userId)
+            .membershipType(membershipType)
+            .point(point)
+            .build();
     }
 }
