@@ -1,5 +1,6 @@
 package com.study.membershipwithtdd.repository;
 
+import static com.study.membershipwithtdd.domain.membership.Membership.MembershipType.NAVER;
 import static org.assertj.core.api.Assertions.assertThat;
 
 import com.study.membershipwithtdd.domain.membership.Membership;
@@ -14,11 +15,11 @@ public class MembershipRepositoryTest {
     private MembershipRepository membershipRepository;
 
     @Test
-    void 멤버십등록() {
+    void 멤버십등록_테스트() {
         //given
         Membership membership = Membership.builder()
             .userId("userId")
-            .membershipName("네이버")
+            .membershipType(NAVER)
             .point(10000)
             .build();
 
@@ -28,7 +29,27 @@ public class MembershipRepositoryTest {
         // then
         assertThat(savedMembership.getId()).isNotNull();
         assertThat(savedMembership.getUserId()).isEqualTo("userId");
-        assertThat(savedMembership.getMembershipName()).isEqualTo("네이버");
+        assertThat(savedMembership.getMembershipType()).isEqualTo(NAVER);
         assertThat(savedMembership.getPoint()).isEqualTo(10000);
+    }
+
+    @Test
+    void 멤버십조회_테스트() {
+        //given
+        Membership membership = Membership.builder()
+            .userId("userId")
+            .membershipType(NAVER)
+            .point(10000)
+            .build();
+
+        //when
+        membershipRepository.save(membership);
+        Membership resultMembership = membershipRepository.findByUserIdAndMembershipType("userId", NAVER);
+
+        //then
+        assertThat(resultMembership).isNotNull();
+        assertThat(resultMembership.getId()).isEqualTo(1L);
+        assertThat(resultMembership.getMembershipType()).isEqualTo(NAVER);
+        assertThat(resultMembership.getPoint()).isEqualTo(10000);
     }
 }
