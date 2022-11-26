@@ -1,34 +1,25 @@
 package com.study.membershipwithtdd.interfaces;
 
 import static com.study.membershipwithtdd.common.constansts.MembershipConstants.USER_ID_HEADER;
-import static com.study.membershipwithtdd.common.exception.MembershipErrorResult.DUPLICATED_MEMBERSHIP_REGISTER;
+import static com.study.membershipwithtdd.common.response.MembershipErrorResult.DUPLICATED_MEMBERSHIP_REGISTER;
 import static com.study.membershipwithtdd.domain.membership.Membership.MembershipType.NAVER;
 import static org.mockito.Mockito.doThrow;
 import static org.springframework.http.MediaType.APPLICATION_JSON;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 import com.google.gson.Gson;
-import com.study.membershipwithtdd.common.constansts.MembershipConstants;
-import com.study.membershipwithtdd.common.exception.MembershipErrorResult;
 import com.study.membershipwithtdd.common.exception.MembershipException;
 import com.study.membershipwithtdd.domain.membership.Membership.MembershipType;
 import com.study.membershipwithtdd.domain.membership.MembershipService;
 import com.study.membershipwithtdd.interfaces.MembershipDto.MembershipRequest;
-import com.study.membershipwithtdd.repository.MembershipRepository;
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import org.mockito.Spy;
 import org.mockito.junit.jupiter.MockitoExtension;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
-import org.springframework.boot.test.mock.mockito.MockBean;
-import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
-import org.springframework.test.web.servlet.RequestBuilder;
 import org.springframework.test.web.servlet.ResultActions;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
@@ -114,4 +105,23 @@ public class MembershipControllerTest {
         resultActions.andExpect(status().isBadRequest());
     }
 
+    @Test
+    void 멤버십등록실패_MembershipService_Throw() throws Exception {
+        // given
+        final String url = "/api/v1/memberships";
+        doThrow(new MembershipException(DUPLICATED_MEMBERSHIP_REGISTER))
+            .when(membershipService)
+            .addMembership("12345", NAVER, 10000);
+
+        // when
+        final ResultActions resultActions = mockMvc.perform(
+            MockMvcRequestBuilders.post(url)
+                .header(USER_ID_HEADER, "12345")
+                .content(gson.toJson(membershipRequest(10000, NAVER)))
+                .contentType(APPLICATION_JSON)
+        );
+
+        // then
+        resultActions.andExpect(status().isBadRequest());
+    }
 }

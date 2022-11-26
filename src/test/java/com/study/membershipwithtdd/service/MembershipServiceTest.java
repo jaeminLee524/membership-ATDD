@@ -11,7 +11,7 @@ import static org.mockito.Mockito.verify;
 import com.study.membershipwithtdd.domain.membership.Membership;
 import com.study.membershipwithtdd.domain.membership.Membership.MembershipType;
 import com.study.membershipwithtdd.domain.membership.MembershipService;
-import com.study.membershipwithtdd.common.exception.MembershipErrorResult;
+import com.study.membershipwithtdd.common.response.MembershipErrorResult;
 import com.study.membershipwithtdd.common.exception.MembershipException;
 import com.study.membershipwithtdd.interfaces.MembershipDto.MembershipResponse;
 import com.study.membershipwithtdd.repository.MembershipRepository;

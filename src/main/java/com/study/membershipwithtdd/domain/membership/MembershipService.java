@@ -1,6 +1,6 @@
 package com.study.membershipwithtdd.domain.membership;
 
-import static com.study.membershipwithtdd.common.exception.MembershipErrorResult.DUPLICATED_MEMBERSHIP_REGISTER;
+import static com.study.membershipwithtdd.common.response.MembershipErrorResult.DUPLICATED_MEMBERSHIP_REGISTER;
 
 import com.study.membershipwithtdd.domain.membership.Membership.MembershipType;
 import com.study.membershipwithtdd.common.exception.MembershipException;

@@ -1,12 +1,18 @@
 package com.study.membershipwithtdd.common.exception;
 
+import com.study.membershipwithtdd.common.response.MembershipErrorResult;
 import lombok.Getter;
-import lombok.RequiredArgsConstructor;
 
 @Getter
-@RequiredArgsConstructor
 public class MembershipException extends RuntimeException{
 
-    private final MembershipErrorResult membershipErrorResult;
+    private MembershipErrorResult membershipErrorResult;
 
+    public MembershipException() {
+    }
+
+    public MembershipException(MembershipErrorResult membershipErrorResult) {
+        super(membershipErrorResult.getErrorMsg());
+        this.membershipErrorResult = membershipErrorResult;
+    }
 }
