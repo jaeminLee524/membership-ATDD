@@ -49,6 +49,7 @@ public class MembershipRepositoryTest {
         //then
         assertThat(resultMembership).isNotNull();
         assertThat(resultMembership.getId()).isEqualTo(1L);
+        assertThat(resultMembership.getUserId()).isEqualTo("userId");
         assertThat(resultMembership.getMembershipType()).isEqualTo(NAVER);
         assertThat(resultMembership.getPoint()).isEqualTo(10000);
     }
