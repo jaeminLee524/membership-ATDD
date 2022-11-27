@@ -3,7 +3,7 @@ package com.study.membershipwithtdd.interfaces;
 import static com.study.membershipwithtdd.common.constansts.MembershipConstants.USER_ID_HEADER;
 import static com.study.membershipwithtdd.common.response.MembershipErrorResult.DUPLICATED_MEMBERSHIP_REGISTER;
 import static com.study.membershipwithtdd.domain.membership.Membership.MembershipType.NAVER;
-import static org.assertj.core.api.Assertions.*;
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.doThrow;
 import static org.springframework.http.MediaType.APPLICATION_JSON;
@@ -18,10 +18,13 @@ import com.study.membershipwithtdd.domain.membership.MembershipService;
 import com.study.membershipwithtdd.interfaces.MembershipDto.MembershipRequest;
 import com.study.membershipwithtdd.interfaces.MembershipDto.MembershipResponse;
 import java.nio.charset.StandardCharsets;
-import org.assertj.core.api.Assertions;
+import java.util.stream.Stream;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.Arguments;
+import org.junit.jupiter.params.provider.MethodSource;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
@@ -130,6 +133,32 @@ public class MembershipControllerTest {
 
         // then
         resultActions.andExpect(status().isBadRequest());
+    }
+
+    @ParameterizedTest
+    @MethodSource("invalidMembershipAddParameter")
+    void 멤버십등록실패_잘못된_파라미터(Integer point, MembershipType membershipType) throws Exception {
+        // given
+        String url = "/api/v1/memberships";
+
+        // when
+        ResultActions resultActions = mockMvc.perform(
+            MockMvcRequestBuilders.post(url)
+                .header(USER_ID_HEADER, "12345")
+                .content(gson.toJson(membershipRequest(point, membershipType)))
+                .contentType(APPLICATION_JSON)
+        );
+
+        // then
+        resultActions.andExpect(status().isBadRequest());
+    }
+
+    private static Stream<Arguments> invalidMembershipAddParameter() {
+        return Stream.of(
+            Arguments.of(null, NAVER),
+            Arguments.of(-1, NAVER),
+            Arguments.of(10000, null)
+        );
     }
 
     @Test
