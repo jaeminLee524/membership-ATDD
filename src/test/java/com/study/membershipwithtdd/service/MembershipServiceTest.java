@@ -18,6 +18,7 @@ import com.study.membershipwithtdd.interfaces.MembershipDto.MembershipDetailResp
 import com.study.membershipwithtdd.repository.MembershipRepository;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Optional;
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -35,6 +36,7 @@ public class MembershipServiceTest {
     private final String userId = "userId";
     private final MembershipType membershipType = NAVER;
     private final Integer point = 10000;
+    private final Long membershipId = 1L;
 
     @Test
     void 멤버십등록_이미존재함_실패테스트() {
@@ -90,5 +92,42 @@ public class MembershipServiceTest {
 
         // then
         assertThat(result.size()).isEqualTo(3);
+    }
+
+    @Test
+    void 멤버십상제조회_실패_존재하지않음() {
+        // given
+        doReturn(Optional.empty()).when(membershipRepository).findById(membershipId);
+
+        // when
+        final MembershipException result = assertThrows(MembershipException.class, () -> target.getMembership(membershipId, userId));
+
+        // then
+        assertThat(result.getMembershipErrorResult()).isEqualTo(MembershipErrorResult.MEMBERSHIP_NOT_FOUND);
+    }
+
+    @Test
+    void 멤버십상세조회_실패_본인이아님() {
+        // given
+        doReturn(Optional.empty()).when(membershipRepository).findById(membershipId);
+
+        // when
+        final MembershipException result = assertThrows(MembershipException.class, () -> target.getMembership(membershipId, "notOwner"));
+
+        // then
+        assertThat(result.getMembershipErrorResult()).isEqualTo(MembershipErrorResult.MEMBERSHIP_NOT_FOUND);
+    }
+
+    @Test
+    void 멤버십상세조회_성공() {
+        // given
+        doReturn(Optional.of(membership())).when(membershipRepository).findById(membershipId);
+
+        // when
+        final MembershipDetailResponse result = target.getMembership(membershipId, userId);
+
+        // then
+        assertThat(result.getMembershipType()).isEqualTo(NAVER);
+        assertThat(result.getPoint()).isEqualTo(point);
     }
 }
