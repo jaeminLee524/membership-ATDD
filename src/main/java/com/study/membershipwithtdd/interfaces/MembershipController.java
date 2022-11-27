@@ -4,13 +4,14 @@ import static com.study.membershipwithtdd.common.constansts.MembershipConstants.
 
 import com.study.membershipwithtdd.common.response.CommonResponse;
 import com.study.membershipwithtdd.domain.membership.MembershipService;
+import com.study.membershipwithtdd.interfaces.MembershipDto.MembershipAddResponse;
 import com.study.membershipwithtdd.interfaces.MembershipDto.MembershipDetailResponse;
 import com.study.membershipwithtdd.interfaces.MembershipDto.MembershipRequest;
-import com.study.membershipwithtdd.interfaces.MembershipDto.MembershipAddResponse;
 import java.util.List;
 import javax.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestHeader;
@@ -40,5 +41,15 @@ public class MembershipController {
         List<MembershipDetailResponse> membershipList = membershipService.getMembershipList(userId);
 
         return CommonResponse.success(membershipList);
+    }
+
+    @GetMapping("/api/v1/memberships/{id}")
+    public CommonResponse<MembershipDetailResponse> getMembership(
+        @RequestHeader(USER_ID_HEADER) String userId,
+        @PathVariable("id") Long id
+    ) {
+        MembershipDetailResponse detailResponse = membershipService.getMembership(id, userId);
+
+        return CommonResponse.success(detailResponse);
     }
 }

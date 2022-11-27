@@ -23,11 +23,10 @@ import org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExcep
 @ControllerAdvice
 public class CommonControllerAdvice {
 
-    @ResponseStatus(BAD_REQUEST)
     @ExceptionHandler(value = MembershipException.class)
-    public CommonResponse onMembershipException(MembershipException ex) {
+    public ResponseEntity<CommonResponse> onMembershipException(MembershipException ex) {
         log.error("MembershipException occur: ", ex);
-        return CommonResponse.fail(ex.getMessage(), ex.getMembershipErrorResult().name());
+        return new ResponseEntity<>(CommonResponse.fail(ex.getMessage(), ex.getMembershipErrorResult().name()), ex.getMembershipErrorResult().getHttpStatus());
     }
 
     @ExceptionHandler(value = Exception.class)
