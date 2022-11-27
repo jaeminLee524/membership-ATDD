@@ -1,12 +1,9 @@
 package com.study.membershipwithtdd.common.response;
 
-import com.study.membershipwithtdd.interfaces.MembershipDto;
-import com.study.membershipwithtdd.interfaces.MembershipDto.MembershipResponse;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-import org.springframework.http.ResponseEntity;
 
 @Getter
 @Builder

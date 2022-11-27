@@ -4,8 +4,11 @@ import static com.study.membershipwithtdd.common.response.MembershipErrorResult.
 
 import com.study.membershipwithtdd.domain.membership.Membership.MembershipType;
 import com.study.membershipwithtdd.common.exception.MembershipException;
-import com.study.membershipwithtdd.interfaces.MembershipDto.MembershipResponse;
+import com.study.membershipwithtdd.interfaces.MembershipDto.MembershipAddResponse;
+import com.study.membershipwithtdd.interfaces.MembershipDto.MembershipDetailResponse;
 import com.study.membershipwithtdd.repository.MembershipRepository;
+import java.util.List;
+import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.util.ObjectUtils;
@@ -16,7 +19,7 @@ public class MembershipService {
 
     private final MembershipRepository membershipRepository;
 
-    public MembershipResponse addMembership(String userId, MembershipType membershipType, Integer point) {
+    public MembershipAddResponse addMembership(String userId, MembershipType membershipType, Integer point) {
         Membership findMembership = membershipRepository.findByUserIdAndMembershipType(userId, membershipType);
         if (!ObjectUtils.isEmpty(findMembership)) {
             throw new MembershipException(DUPLICATED_MEMBERSHIP_REGISTER);
@@ -30,9 +33,17 @@ public class MembershipService {
 
         Membership savedMembership = membershipRepository.save(membership);
 
-        return MembershipResponse.builder()
+        return MembershipAddResponse.builder()
             .id(savedMembership.getId())
             .membershipType(savedMembership.getMembershipType())
             .build();
+    }
+
+    public List<MembershipDetailResponse> getMembershipList(String userId) {
+        List<Membership> findMembershipList = membershipRepository.findAllByUserId(userId);
+
+        return findMembershipList.stream()
+            .map(MembershipDetailResponse::of)
+            .collect(Collectors.toList());
     }
 }

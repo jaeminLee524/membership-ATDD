@@ -15,9 +15,11 @@ import com.study.membershipwithtdd.common.response.CommonControllerAdvice;
 import com.study.membershipwithtdd.common.response.CommonResponse;
 import com.study.membershipwithtdd.domain.membership.Membership.MembershipType;
 import com.study.membershipwithtdd.domain.membership.MembershipService;
+import com.study.membershipwithtdd.interfaces.MembershipDto.MembershipDetailResponse;
 import com.study.membershipwithtdd.interfaces.MembershipDto.MembershipRequest;
-import com.study.membershipwithtdd.interfaces.MembershipDto.MembershipResponse;
+import com.study.membershipwithtdd.interfaces.MembershipDto.MembershipAddResponse;
 import java.nio.charset.StandardCharsets;
+import java.util.Arrays;
 import java.util.stream.Stream;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -165,12 +167,12 @@ public class MembershipControllerTest {
     void 멤버십등록성공() throws Exception {
         // given
         final String url = "/api/v1/memberships";
-        final MembershipResponse membershipResponse = MembershipResponse.builder()
+        final MembershipAddResponse membershipAddResponse = MembershipAddResponse.builder()
             .id(-1L)
             .membershipType(NAVER)
             .build();
 
-        doReturn(membershipResponse).when(membershipService).addMembership("12345", NAVER, 10000);
+        doReturn(membershipAddResponse).when(membershipService).addMembership("12345", NAVER, 10000);
 
         // when
         ResultActions resultActions = mockMvc.perform(
@@ -189,5 +191,39 @@ public class MembershipControllerTest {
             .getData();
 
         assertThat(response).isNotNull();
+    }
+
+    @Test
+    void 멤버십목록조회실패_사용자식별값_헤더에없음() throws Exception {
+        // given
+        final String url = "/api/v1/memberships";
+
+        // when
+        final ResultActions resultActions = mockMvc.perform(
+            MockMvcRequestBuilders.get(url)
+        );
+
+        // then
+        resultActions.andExpect(status().isBadRequest());
+    }
+
+    @Test
+    void 멤버십목록조회_성공() throws Exception {
+        // given
+        final String url = "/api/v1/memberships";
+        doReturn(Arrays.asList(
+            MembershipDetailResponse.builder().build(),
+            MembershipDetailResponse.builder().build(),
+            MembershipDetailResponse.builder().build()
+        )).when(membershipService).getMembershipList("12345");
+
+        // when
+        ResultActions resultActions = mockMvc.perform(
+            MockMvcRequestBuilders.get(url)
+                .header(USER_ID_HEADER, "12345")
+        );
+
+        // then
+        resultActions.andExpect(status().isOk());
     }
 }

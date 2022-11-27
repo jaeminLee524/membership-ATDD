@@ -13,8 +13,11 @@ import com.study.membershipwithtdd.domain.membership.Membership.MembershipType;
 import com.study.membershipwithtdd.domain.membership.MembershipService;
 import com.study.membershipwithtdd.common.response.MembershipErrorResult;
 import com.study.membershipwithtdd.common.exception.MembershipException;
-import com.study.membershipwithtdd.interfaces.MembershipDto.MembershipResponse;
+import com.study.membershipwithtdd.interfaces.MembershipDto.MembershipAddResponse;
+import com.study.membershipwithtdd.interfaces.MembershipDto.MembershipDetailResponse;
 import com.study.membershipwithtdd.repository.MembershipRepository;
+import java.util.Arrays;
+import java.util.List;
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -46,8 +49,6 @@ public class MembershipServiceTest {
         assertThat(result.getMembershipErrorResult()).isEqualTo(MembershipErrorResult.DUPLICATED_MEMBERSHIP_REGISTER);
     }
 
-
-
     @Test
     void 멤버십등록_성공_테스트() {
         // given
@@ -55,7 +56,7 @@ public class MembershipServiceTest {
         doReturn(membership()).when(membershipRepository).save(any(Membership.class));
 
         // when
-        MembershipResponse savedMembership = target.addMembership(userId, membershipType, point);
+        MembershipAddResponse savedMembership = target.addMembership(userId, membershipType, point);
 
         // then
         Assertions.assertThat(savedMembership.getId()).isNotNull();
@@ -73,5 +74,21 @@ public class MembershipServiceTest {
             .membershipType(membershipType)
             .point(point)
             .build();
+    }
+
+    @Test
+    void 멤버십목록조회() {
+        // given
+        doReturn(Arrays.asList(
+            Membership.builder().build(),
+            Membership.builder().build(),
+            Membership.builder().build()
+        )).when(membershipRepository).findAllByUserId("userId");
+
+        // when
+        final List<MembershipDetailResponse> result = target.getMembershipList(userId);
+
+        // then
+        assertThat(result.size()).isEqualTo(3);
     }
 }
