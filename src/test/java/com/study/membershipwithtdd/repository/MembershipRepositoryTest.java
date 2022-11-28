@@ -82,4 +82,18 @@ public class MembershipRepositoryTest {
             .point(point)
             .build();
     }
+
+    @Test
+    void 멤버십_추가후_삭제() {
+        // given
+        final Membership membership = Membership.builder()
+            .userId("userId")
+            .membershipType(NAVER)
+            .point(10000)
+            .build();
+
+        final Membership savedMembership = membershipRepository.save(membership);
+
+        membershipRepository.deleteById(savedMembership.getId());
+    }
 }
