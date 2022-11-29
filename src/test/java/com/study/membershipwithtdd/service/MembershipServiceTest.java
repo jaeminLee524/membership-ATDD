@@ -38,7 +38,7 @@ public class MembershipServiceTest {
     private final String userId = "userId";
     private final MembershipType membershipType = NAVER;
     private final Integer point = 10000;
-    private final Long membershipId = 1L;
+    private final Long membershipId = -1L;
 
     @Test
     void 멤버십등록_이미존재함_실패테스트() {
@@ -148,10 +148,11 @@ public class MembershipServiceTest {
     @Test
     void 멤버십삭제_실패_본인이아님() {
         // given
-        doReturn(Optional.of(membership())).when(membershipRepository).findById(membershipId);
+        final Membership membership = membership();
+        doReturn(Optional.of(membership)).when(membershipRepository).findById(membershipId);
 
         // when
-        final MembershipException result = assertThrows(MembershipException.class, () -> target.removeMembership(membershipId, userId));
+        final MembershipException result = assertThrows(MembershipException.class, () -> target.removeMembership(membershipId, "notOwner"));
 
         // then
         assertThat(result.getMembershipErrorResult()).isEqualTo(NOT_MEMBERSHIP_OWNER);
