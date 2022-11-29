@@ -306,4 +306,5 @@ public class MembershipControllerTest {
         // then
         resultActions.andExpect(status().isOk());
     }
+
 }
