@@ -2,6 +2,7 @@ package com.study.membershipwithtdd.domain.membership;
 
 import static com.study.membershipwithtdd.common.response.MembershipErrorResult.DUPLICATED_MEMBERSHIP_REGISTER;
 import static com.study.membershipwithtdd.common.response.MembershipErrorResult.MEMBERSHIP_NOT_FOUND;
+import static com.study.membershipwithtdd.common.response.MembershipErrorResult.NOT_MEMBERSHIP_OWNER;
 
 import com.study.membershipwithtdd.common.exception.MembershipException;
 import com.study.membershipwithtdd.common.response.MembershipErrorResult;
@@ -59,5 +60,17 @@ public class MembershipService {
         }
 
         return MembershipDetailResponse.of(findMembership);
+    }
+
+    public void removeMembership(final Long membershipId, final String userId) {
+        final Membership findMembership = membershipRepository.findById(membershipId).orElseThrow(
+            () -> new MembershipException(MEMBERSHIP_NOT_FOUND)
+        );
+
+        if (!findMembership.getUserId().equals(userId)) {
+            throw new MembershipException(NOT_MEMBERSHIP_OWNER);
+        }
+
+        membershipRepository.deleteById(membershipId);
     }
 }
