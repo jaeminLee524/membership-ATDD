@@ -3,6 +3,7 @@ package com.study.membershipwithtdd.service;
 import static org.assertj.core.api.Assertions.assertThat;
 
 import com.study.membershipwithtdd.service.point.PointService;
+import com.study.membershipwithtdd.service.point.RatePointService;
 import java.util.stream.Stream;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -19,7 +20,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
 public class PointServiceTest {
 
     @InjectMocks
-    private PointService pointService;
+    private RatePointService pointService;
 
     @Test
     void 포인트적립_10000원의_적립은_100원() {
