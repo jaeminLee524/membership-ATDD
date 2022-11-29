@@ -168,5 +168,6 @@ public class MembershipServiceTest {
         target.removeMembership(membershipId, userId);
 
         // then
+
     }
 }
