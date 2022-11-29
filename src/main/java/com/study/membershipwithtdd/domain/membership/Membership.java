@@ -14,6 +14,7 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.Setter;
 import org.hibernate.annotations.ColumnDefault;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
@@ -39,6 +40,7 @@ public class Membership {
 
     @Column(nullable = false)
     @ColumnDefault("0")
+    @Setter
     private Integer point;
 
     @CreationTimestamp

@@ -18,6 +18,7 @@ import com.study.membershipwithtdd.common.exception.MembershipException;
 import com.study.membershipwithtdd.interfaces.MembershipDto.MembershipAddResponse;
 import com.study.membershipwithtdd.interfaces.MembershipDto.MembershipDetailResponse;
 import com.study.membershipwithtdd.repository.MembershipRepository;
+import com.study.membershipwithtdd.service.point.RatePointService;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
@@ -35,6 +36,8 @@ public class MembershipServiceTest {
     private MembershipService target;
     @Mock // MembershipService는 MembershipRepository가 의존성이 있는 클래스이므로 가짜 객체를 주입해주는 @Mock
     private MembershipRepository membershipRepository;
+    @Mock
+    private RatePointService ratePointService;
     private final String userId = "userId";
     private final MembershipType membershipType = NAVER;
     private final Integer point = 10000;
@@ -170,5 +173,38 @@ public class MembershipServiceTest {
         // then
     }
 
+    @Test
+    void 포인트적립_실패_존재하지않음() {
+        // given
+        doReturn(Optional.empty()).when(membershipRepository).findById(membershipId);
 
+        // when
+        final MembershipException result = assertThrows(MembershipException.class, () -> target.accumulateMembershipPoint(membershipId, userId, 10000));
+
+        // then
+        assertThat(result.getMembershipErrorResult()).isEqualTo(MEMBERSHIP_NOT_FOUND);
+    }
+
+    @Test
+    void 포인트적립_실패_본인이아님() {
+        // given
+        final Membership membership = membership();
+        doReturn(Optional.of(membership)).when(membershipRepository).findById(membershipId);
+
+        // when
+        final MembershipException result = assertThrows(MembershipException.class, () -> target.accumulateMembershipPoint(membershipId, "notOwner", 10000));
+
+        // then
+        assertThat(result.getMembershipErrorResult()).isEqualTo(NOT_MEMBERSHIP_OWNER);
+    }
+
+    @Test
+    void 포인트적립_성공() {
+        // given
+        final Membership membership = membership();
+        doReturn(Optional.of(membership)).when(membershipRepository).findById(membershipId);
+
+        // when
+        target.accumulateMembershipPoint(membershipId, userId, 10000);
+    }
 }

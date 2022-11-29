@@ -10,17 +10,21 @@ import com.study.membershipwithtdd.domain.membership.Membership.MembershipType;
 import com.study.membershipwithtdd.interfaces.MembershipDto.MembershipAddResponse;
 import com.study.membershipwithtdd.interfaces.MembershipDto.MembershipDetailResponse;
 import com.study.membershipwithtdd.repository.MembershipRepository;
+import com.study.membershipwithtdd.service.point.RatePointService;
 import java.util.List;
 import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.ObjectUtils;
 
 @Service
 @RequiredArgsConstructor
+@Transactional(readOnly = true)
 public class MembershipService {
 
     private final MembershipRepository membershipRepository;
+    private final RatePointService ratePointService;
 
     public MembershipAddResponse addMembership(String userId, MembershipType membershipType, Integer point) {
         Membership findMembership = membershipRepository.findByUserIdAndMembershipType(userId, membershipType);
@@ -72,5 +76,19 @@ public class MembershipService {
         }
 
         membershipRepository.deleteById(membershipId);
+    }
+
+    @Transactional
+    public void accumulateMembershipPoint(Long membershipId, String userId, int point) {
+        final Membership findMembership = membershipRepository.findById(membershipId).orElseThrow(
+            () -> new MembershipException(MEMBERSHIP_NOT_FOUND));
+
+        if (!findMembership.getUserId().equals(userId)) {
+            throw new MembershipException(NOT_MEMBERSHIP_OWNER);
+        }
+
+        final int additionalAmount = ratePointService.calculateAmount(point);
+
+        findMembership.setPoint(additionalAmount);
     }
 }
