@@ -14,11 +14,12 @@ import com.study.membershipwithtdd.common.exception.MembershipException;
 import com.study.membershipwithtdd.common.response.CommonControllerAdvice;
 import com.study.membershipwithtdd.common.response.CommonResponse;
 import com.study.membershipwithtdd.common.response.MembershipErrorResult;
+import com.study.membershipwithtdd.domain.membership.Membership;
 import com.study.membershipwithtdd.domain.membership.Membership.MembershipType;
 import com.study.membershipwithtdd.domain.membership.MembershipService;
+import com.study.membershipwithtdd.interfaces.MembershipDto.MembershipAddResponse;
 import com.study.membershipwithtdd.interfaces.MembershipDto.MembershipDetailResponse;
 import com.study.membershipwithtdd.interfaces.MembershipDto.MembershipRequest;
-import com.study.membershipwithtdd.interfaces.MembershipDto.MembershipAddResponse;
 import java.nio.charset.StandardCharsets;
 import java.util.Arrays;
 import java.util.stream.Stream;
@@ -281,7 +282,7 @@ public class MembershipControllerTest {
     @Test
     void 멤버십삭제_실패_사용자식별값_헤더에없음() throws Exception {
         // given
-        String url = "/api/v1/memberships";
+        String url = "/api/v1/memberships/-1";
 
         // when
         ResultActions resultActions = mockMvc.perform(
@@ -305,5 +306,61 @@ public class MembershipControllerTest {
 
         // then
         resultActions.andExpect(status().isOk());
+    }
+
+    @Test
+    void 멤버십적립_실패_사용자식별값_헤더에없음() throws Exception {
+        // given
+        final String url = "/api/v1/memberships/-1/accumulate";
+
+        // when
+        final ResultActions resultActions = mockMvc.perform(
+            MockMvcRequestBuilders.post(url)
+                .content(gson.toJson(membershipRequest(10000)))
+                .contentType(APPLICATION_JSON)
+        );
+
+        // then
+        resultActions.andExpect(status().isBadRequest());
+    }
+
+    @Test
+    void 멤버십적립_실패_포인트가음수() throws Exception {
+        // given
+        final String url = "/api/v1/memberships/-1/accumulate";
+
+        // when
+        final ResultActions resultActions = mockMvc.perform(
+            MockMvcRequestBuilders.post(url)
+                .header(USER_ID_HEADER, "12345")
+                .content(gson.toJson(membershipRequest(-10000, NAVER)))
+                .contentType(APPLICATION_JSON)
+        );
+
+        // then
+        resultActions.andExpect(status().isBadRequest());
+    }
+
+    @Test
+    void 멤버십적립_성공() throws Exception {
+        // given
+        final String url = "/api/v1/memberships/-1/accumulate";
+
+        // when
+        ResultActions resultActions = mockMvc.perform(
+            MockMvcRequestBuilders.post(url)
+                .header(USER_ID_HEADER, "1345")
+                .content(gson.toJson(MembershipRequest.builder().point(10000).membershipType(NAVER).build()))
+                .contentType(APPLICATION_JSON)
+        );
+
+        // then
+        resultActions.andExpect(status().isOk());
+    }
+
+    public static Membership membershipRequest(int point) {
+        return Membership.builder()
+            .point(point)
+            .build();
     }
 }

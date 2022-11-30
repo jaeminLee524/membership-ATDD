@@ -10,7 +10,6 @@ import com.study.membershipwithtdd.interfaces.MembershipDto.MembershipRequest;
 import java.util.List;
 import javax.validation.Valid;
 import lombok.RequiredArgsConstructor;
-import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -55,12 +54,24 @@ public class MembershipController {
         return CommonResponse.success(detailResponse);
     }
 
-    @DeleteMapping("/api/v1/memberships")
+    @DeleteMapping("/api/v1/memberships/{id}")
     public CommonResponse deleteMembership(
         @RequestHeader(USER_ID_HEADER) String userId,
         @PathVariable("id") Long id
     ) {
         membershipService.removeMembership(id, userId);
+
+        return CommonResponse.success("OK");
+    }
+
+    @PostMapping("/api/v1/memberships/{id}/accumulate")
+    public CommonResponse accumulateMemberhship(
+        @RequestHeader(USER_ID_HEADER) String userId,
+        @RequestBody @Valid MembershipRequest membershipRequest,
+        @PathVariable("id") Long id
+    ) {
+        Integer point = membershipRequest.getPoint();
+        membershipService.accumulateMembershipPoint(id, userId, point);
 
         return CommonResponse.success("OK");
     }
