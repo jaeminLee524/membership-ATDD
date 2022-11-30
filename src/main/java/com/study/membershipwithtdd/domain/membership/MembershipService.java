@@ -10,7 +10,7 @@ import com.study.membershipwithtdd.domain.membership.Membership.MembershipType;
 import com.study.membershipwithtdd.interfaces.MembershipDto.MembershipAddResponse;
 import com.study.membershipwithtdd.interfaces.MembershipDto.MembershipDetailResponse;
 import com.study.membershipwithtdd.repository.MembershipRepository;
-import com.study.membershipwithtdd.service.point.RatePointService;
+import com.study.membershipwithtdd.service.point.PointService;
 import java.util.List;
 import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
@@ -24,7 +24,7 @@ import org.springframework.util.ObjectUtils;
 public class MembershipService {
 
     private final MembershipRepository membershipRepository;
-    private final RatePointService ratePointService;
+    private final PointService ratePointService;
 
     public MembershipAddResponse addMembership(String userId, MembershipType membershipType, Integer point) {
         Membership findMembership = membershipRepository.findByUserIdAndMembershipType(userId, membershipType);
