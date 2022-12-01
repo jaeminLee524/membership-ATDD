@@ -19,12 +19,21 @@ public class MembershipDto {
     @Getter
     @RequiredArgsConstructor
     @NoArgsConstructor(force = true)
-    public static class MembershipRequest {
+    public static class MembershipAddRequest {
         @NotNull
         @Min(0) // 양수를 의미
         private final Integer point;
         @NotNull
         private final MembershipType membershipType;
+    }
+
+    @Getter
+    @Builder
+    @RequiredArgsConstructor
+    @NoArgsConstructor(force = true)
+    public static class PointAccumulateRequest {
+        @NotNull
+        private final Integer point;
     }
 
     /**

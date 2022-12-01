@@ -19,7 +19,8 @@ import com.study.membershipwithtdd.domain.membership.Membership.MembershipType;
 import com.study.membershipwithtdd.domain.membership.MembershipService;
 import com.study.membershipwithtdd.interfaces.MembershipDto.MembershipAddResponse;
 import com.study.membershipwithtdd.interfaces.MembershipDto.MembershipDetailResponse;
-import com.study.membershipwithtdd.interfaces.MembershipDto.MembershipRequest;
+import com.study.membershipwithtdd.interfaces.MembershipDto.MembershipAddRequest;
+import com.study.membershipwithtdd.interfaces.MembershipDto.PointAccumulateRequest;
 import java.nio.charset.StandardCharsets;
 import java.util.Arrays;
 import java.util.stream.Stream;
@@ -78,8 +79,8 @@ public class MembershipControllerTest {
         resultActions.andExpect(status().isBadRequest());
     }
 
-    private MembershipRequest membershipRequest(Integer point, MembershipType membershipType) {
-        return MembershipRequest.builder()
+    private MembershipAddRequest membershipRequest(Integer point, MembershipType membershipType) {
+        return MembershipAddRequest.builder()
             .point(point)
             .membershipType(membershipType)
             .build();
@@ -350,7 +351,7 @@ public class MembershipControllerTest {
         ResultActions resultActions = mockMvc.perform(
             MockMvcRequestBuilders.post(url)
                 .header(USER_ID_HEADER, "1345")
-                .content(gson.toJson(MembershipRequest.builder().point(10000).membershipType(NAVER).build()))
+                .content(gson.toJson(PointAccumulateRequest.builder().point(10000).build()))
                 .contentType(APPLICATION_JSON)
         );
 

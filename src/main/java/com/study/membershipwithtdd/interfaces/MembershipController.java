@@ -6,7 +6,7 @@ import com.study.membershipwithtdd.common.response.CommonResponse;
 import com.study.membershipwithtdd.domain.membership.MembershipService;
 import com.study.membershipwithtdd.interfaces.MembershipDto.MembershipAddResponse;
 import com.study.membershipwithtdd.interfaces.MembershipDto.MembershipDetailResponse;
-import com.study.membershipwithtdd.interfaces.MembershipDto.MembershipRequest;
+import com.study.membershipwithtdd.interfaces.MembershipDto.PointAccumulateRequest;
 import java.util.List;
 import javax.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -27,10 +27,10 @@ public class MembershipController {
     @PostMapping("/api/v1/memberships")
     public CommonResponse<MembershipAddResponse> addMembership(
         @RequestHeader(USER_ID_HEADER) String userId,
-        @RequestBody @Valid MembershipRequest membershipRequest
+        @RequestBody @Valid MembershipDto.MembershipAddRequest membershipAddRequest
     ) {
         MembershipAddResponse membershipAddResponse =
-            membershipService.addMembership(userId, membershipRequest.getMembershipType(), membershipRequest.getPoint());
+            membershipService.addMembership(userId, membershipAddRequest.getMembershipType(), membershipAddRequest.getPoint());
 
         return CommonResponse.success(membershipAddResponse);
     }
@@ -65,12 +65,12 @@ public class MembershipController {
     }
 
     @PostMapping("/api/v1/memberships/{id}/accumulate")
-    public CommonResponse accumulateMemberhship(
+    public CommonResponse accumulateMembership(
         @RequestHeader(USER_ID_HEADER) String userId,
-        @RequestBody @Valid MembershipRequest membershipRequest,
+        @RequestBody @Valid PointAccumulateRequest pointAccumulateRequest,
         @PathVariable("id") Long id
     ) {
-        Integer point = membershipRequest.getPoint();
+        Integer point = pointAccumulateRequest.getPoint();
         membershipService.accumulateMembershipPoint(id, userId, point);
 
         return CommonResponse.success("OK");
